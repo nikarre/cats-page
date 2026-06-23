@@ -7,11 +7,7 @@
 </head>
 <body>
 
-<!-- Заголовок и контейнер создаются прямо в скрипте,
-     чтобы в коде вообще не было классов и innerHTML -->
-
 <script>
-// Данные о котиках. gender (girl/boy) нужен, чтобы красить карточки по полу
 const cats = [
   {"name":"Лара","gender":"girl","img_link":"https://www.friendforpet.ru/api/sites/default/files/2021-09/167200DD-A44F-4845-8D4D-ACCFC180165A.jpeg","age":8,"rate":7,"favourite":false,"description":"Лара – шотландская вислоухая, у нее остеохондродисплазия. Лара спокойная, очень ласковая и контактная. Болезнь не лечится и специального ухода не нужно.","id":1},
   {"name":"Базиль","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/064AEBCB-45EC-4CE7-AB13-C65F10F00B7B.jpeg","age":2,"rate":10,"favourite":false,"description":"Внимательный, активный и ласковый. Любит играть, катать мяч, и мурчать на пледе рядом с людьми! Прилично воспитан, приучен к лотку. Вакцинирован, имеет ветеринарный паспорт.","id":2},
@@ -24,28 +20,24 @@ const cats = [
   {"name":"Светлячок","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/%D1%81%D0%B2%D0%B5%D1%82%D0%BB%D1%8F%D1%87%D0%BE%D0%BA4_%D0%B0%D0%BB%D0%B5%D0%BA%D1%81.jpg","age":1,"rate":9,"favourite":true,"description":"Немного боязливый, но очень добрый и нежный кот Светлячок. Приучен к лотку и когтеточке, ладит с детьми, привит. Станет вам хорошим другом","id":9}
 ];
 
-// Правильное окончание слова "год": 1 год, 2 года, 5 лет
 function yearWord(age) {
   if (age % 10 === 1 && age % 100 !== 11) return "год";
   if ([2,3,4].includes(age % 10) && ![12,13,14].includes(age % 100)) return "года";
   return "лет";
 }
 
-// --- Оформляем body через свойство style (без классов) ---
 document.body.style.fontFamily = "'Segoe UI', Arial, sans-serif";
 document.body.style.margin = "0";
 document.body.style.padding = "30px";
 document.body.style.background = "#f5f3ef";
 document.body.style.color = "#2c2c2c";
 
-// Заголовок страницы — createElement, текст через textContent
 const h1 = document.createElement("h1");
 h1.textContent = "🐾 Котики ищут дом";
 h1.style.textAlign = "center";
 h1.style.marginBottom = "30px";
 document.body.append(h1);
 
-// Контейнер-сетка для карточек
 const grid = document.createElement("div");
 grid.style.display = "grid";
 grid.style.gridTemplateColumns = "repeat(auto-fill, minmax(280px, 1fr))";
@@ -54,19 +46,15 @@ grid.style.maxWidth = "1200px";
 grid.style.margin = "0 auto";
 document.body.append(grid);
 
-// Перебираем котиков и для каждого строим карточку
 cats.forEach(cat => {
-  // Карточка
   const card = document.createElement("div");
   card.style.borderRadius = "14px";
   card.style.overflow = "hidden";
   card.style.boxShadow = "0 4px 14px rgba(0,0,0,0.08)";
   card.style.display = "flex";
   card.style.flexDirection = "column";
-  // Цвет карточки в зависимости от пола (вместо классов girl/boy)
   card.style.background = cat.gender === "girl" ? "#ffe1ec" : "#dcebff";
 
-  // Фото
   const img = document.createElement("img");
   img.src = cat.img_link;
   img.alt = cat.name;
@@ -75,19 +63,16 @@ cats.forEach(cat => {
   img.style.objectFit = "cover";
   card.append(img);
 
-  // Тело карточки
   const body = document.createElement("div");
   body.style.padding = "16px";
   body.style.display = "flex";
   body.style.flexDirection = "column";
 
-  // Заголовок с именем
   const title = document.createElement("h2");
   title.textContent = cat.name;
   title.style.margin = "0 0 6px";
   title.style.fontSize = "20px";
 
-  // Если котик любимый — добавляем сердечко отдельным элементом
   if (cat.favourite) {
     const heart = document.createElement("span");
     heart.textContent = " ❤";
@@ -96,7 +81,6 @@ cats.forEach(cat => {
   }
   body.append(title);
 
-  // Возраст и рейтинг
   const meta = document.createElement("div");
   meta.textContent = "Возраст: " + cat.age + " " + yearWord(cat.age) + " · Рейтинг: " + cat.rate + "/10";
   meta.style.fontSize = "14px";
@@ -104,7 +88,6 @@ cats.forEach(cat => {
   meta.style.marginBottom = "10px";
   body.append(meta);
 
-  // Описание
   const desc = document.createElement("p");
   desc.textContent = cat.description;
   desc.style.fontSize = "14px";
@@ -113,7 +96,7 @@ cats.forEach(cat => {
   body.append(desc);
 
   card.append(body);
-  grid.append(card); // добавляем готовую карточку в сетку
+  grid.append(card);
 });
 </script>
 
