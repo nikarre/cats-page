@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Котики ищут дом</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 30px;
+    background: #f5f3ef;
+    color: #2c2c2c;
+  }
+  h1 { text-align: center; margin-bottom: 30px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s;
+  }
+  .card:hover { transform: translateY(-4px); }
+
+  /* Подсветка карточки по полу */
+  .card.girl { background: #ffe1ec; } /* нежно-розовый — девочки */
+  .card.boy  { background: #dcebff; } /* светло-синий — мальчики */
+
+  .card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+  }
+
+  .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+
+  .card-title {
+    margin: 0 0 6px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .heart { color: #ffe066; } /* светло-жёлтое сердечко у любимчиков */
+
+  .meta { font-size: 14px; color: #666; margin-bottom: 10px; }
+  .rate { font-weight: bold; }
+
+  .desc { font-size: 14px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<h1>🐾 Котики ищут дом</h1>
+
+<div class="grid" id="catsGrid"></div>
+
+<script>
+const cats = [
+    {"name":"Лара","gender":"girl","img_link":"https://www.friendforpet.ru/api/sites/default/files/2021-09/167200DD-A44F-4845-8D4D-ACCFC180165A.jpeg","age":8,"rate":7,"favourite":false,"description":"Лара – шотландская вислоухая, у нее остеохондродисплазия. Лара спокойная, очень ласковая и контактная. Болезнь не лечится и специального ухода не нужно.","id":1},
+    {"name":"Базиль","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/064AEBCB-45EC-4CE7-AB13-C65F10F00B7B.jpeg","age":2,"rate":10,"favourite":false,"description":"Внимательный, активный и ласковый. Любит играть, катать мяч, и мурчать на пледе рядом с людьми! Прилично воспитан, приучен к лотку. Вакцинирован, имеет ветеринарный паспорт.","id":2},
+    {"name":"Риш","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/_DM34706.JPG","age":1,"rate":10,"favourite":true,"description":"Риш любит лесенки, канаты. Очень активный и дружелюбный кот. Риш полностью здоров, привит, кастрирован. Использует лоточек и очень аккуратен.","id":3},
+    {"name":"Элли","gender":"girl","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/1_25.jpg","age":4,"rate":8,"favourite":false,"description":"Элли обладает мягким и добрым характером. Очень любит всевозможные лакомства и вкусно покушать. Не доверяет людям, потребуется время, чтобы стать ей другом. Приучена к лотку и когтеточке","id":4},
+    {"name":"Чарли","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/%D0%BB%D0%B5%D0%B2%D0%B83_%D0%B0%D0%BB%D0%B5%D0%BA%D1%81.jpg","age":1,"rate":8,"favourite":false,"description":"Чёрно-белый юный котофилософ очень любит размышлять и быть наедине. Пока что не доверяет людям, не агрессивный. Ладит с другими животными, приучен к лотку и когтеточке","id":5},
+    {"name":"Стефани","gender":"girl","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/4_30.jpg","age":6,"rate":9,"favourite":false,"description":"Прелестная Стефани – трогательная, добродушная и очень-очень общительная девочка как никто другой нуждается в заботе и любви. Приучена к лотку и когтеточке","id":6},
+    {"name":"Дуся","gender":"girl","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-02/B1444207-6EE3-4BA4-97F7-2F9666AE2F63.jpeg","age":1,"rate":9,"favourite":false,"description":"Дусеньке около 1 года с небольшим, здорова, привита, стерилизована. Лоточек и когтеточку знает прекрасно. Очень общительная и нежная, хочет постоянного внимания.","id":7},
+    {"name":"Бруно","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/IMG-20211223-WA0049.jpg","age":1,"rate":10,"favourite":false,"description":"Очаровательный активный кот Бруно, находится в постоянном движении! Очаровательный и ласковый кот. Приучен к лотку, ладит с другими котами, привит.","id":8},
+    {"name":"Светлячок","gender":"boy","img_link":"https://www.friendforpet.ru/api/sites/default/files/2022-01/%D1%81%D0%B2%D0%B5%D1%82%D0%BB%D1%8F%D1%87%D0%BE%D0%BA4_%D0%B0%D0%BB%D0%B5%D0%BA%D1%81.jpg","age":1,"rate":9,"favourite":true,"description":"Немного боязливый, но очень добрый и нежный кот Светлячок. Приучен к лотку и когтеточке, ладит с детьми, привит. Станет вам хорошим другом","id":9}
+];
+
+// Склонение слова "год" по возрасту
+function yearWord(age) {
+  if (age % 10 === 1 && age % 100 !== 11) return "год";
+  if ([2,3,4].includes(age % 10) && ![12,13,14].includes(age % 100)) return "года";
+  return "лет";
+}
+
+const grid = document.getElementById("catsGrid");
+
+cats.forEach(cat => {
+  const card = document.createElement("div");
+  // класс girl/boy задаёт цвет карточки
+  card.className = "card " + cat.gender;
+
+  const heart = cat.favourite ? '<span class="heart">❤</span>' : '';
+
+  card.innerHTML = `
+    <img src="${cat.img_link}" alt="${cat.name}">
+    <div class="card-body">
+      <h2 class="card-title">${cat.name} ${heart}</h2>
+      <div class="meta">
+        Возраст: ${cat.age} ${yearWord(cat.age)} ·
+        Рейтинг: <span class="rate">${cat.rate}/10</span>
+      </div>
+      <p class="desc">${cat.description}</p>
+    </div>
+  `;
+
+  grid.appendChild(card);
+});
+</script>
+
+</body>
+</html>
